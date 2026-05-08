@@ -1,0 +1,25 @@
+{
+  "name": "opencode_on_discord",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sensoymito/opencode_on_discord.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sensoymito/opencode_on_discord/issues"
+  },
+  "homepage": "https://github.com/sensoymito/opencode_on_discord#readme",
+  "dependencies": {
+    "@opencode-ai/sdk": "^1.14.41",
+    "discord.js": "^14.26.4"
+  }
+}
