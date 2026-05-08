@@ -1,21 +1,22 @@
-const discord = require("discord.js");
-const dotenv = require("dotenv")
+import { Client, GatewayIntentBits, Events, SlashCommandBuilder } from "discord.js";
+import {} from "@opencode-ai/sdk";
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
-const client = new discord.Client({
-  intents: Object.values(discord.GatewayIntentBits),
+const client = new Client({
+  intents: Object.values(GatewayIntentBits),
 });
 
-client.on(discord.Events.ClientReady, async () => {
+client.on(Events.ClientReady, async () => {
   console.log(`${client.user.tag} でログインしました`);
 
   const commands = [
-    new discord.SlashCommandBuilder()
+    new SlashCommandBuilder()
       .setName("ask")
       .setDescription("返事をしてくれます")
       .addStringOption(option => option
-        .setName("Text")
+        .setName("text")
         .setDescription("コンテキスト")
         .setRequired(true)
       )
@@ -25,13 +26,13 @@ client.on(discord.Events.ClientReady, async () => {
   console.log("コマンドを登録しました");
 });
 
-client.on(discord.Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const command = interaction.commandName;
 
   if (command === "ask") {
-    const arg = interaction.options.getString("Text")
+    const arg = interaction.options.getString("text")
     await interaction.reply(`${arg}: 実行`);
   }
 });
