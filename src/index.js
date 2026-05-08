@@ -13,7 +13,12 @@ client.on(discord.Events.ClientReady, async () => {
   const commands = [
     new discord.SlashCommandBuilder()
       .setName("ask")
-      .setDescription("返事をしてくれます"),
+      .setDescription("返事をしてくれます")
+      .addStringOption(option => option
+        .setName("Text")
+        .setDescription("コンテキスト")
+        .setRequired(true)
+      )
   ];
 
   await client.application.commands.set(commands);
@@ -26,7 +31,8 @@ client.on(discord.Events.InteractionCreate, async (interaction) => {
   const command = interaction.commandName;
 
   if (command === "ask") {
-    await interaction.reply("コマンド");
+    const arg = interaction.options.getString("Text")
+    await interaction.reply(`${arg}: 実行`);
   }
 });
 
