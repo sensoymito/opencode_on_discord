@@ -5,6 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import dotenv from "dotenv";
+import { askOpencode } from "./opencode/index.js"
 
 dotenv.config();
 
