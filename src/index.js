@@ -22,15 +22,6 @@ client.on(Events.ClientReady, async () => {
           .setDescription("プロンプトテキスト")
           .setRequired(true),
       ),
-    new SlashCommandBuilder()
-      .setName("dev")
-      .setDescription("デバッグ用")
-      .addStringOption((option) =>
-        option
-          .setName("code")
-          .setDescription("デバッグ用コード")
-          .setRequired(true),
-      ),
   ];
 
   await client.application.commands.set(commands);
@@ -42,7 +33,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   const command = interaction.commandName;
   const textarg = interaction.options.getString("text");
-  const debugarg = interaction.options.getString("code");
 
   switch (command) {
     case "ask":
@@ -59,16 +49,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         console.error(error);
         if (interaction.isRepliable()) {
           await interaction.editReply("エラーが発生しました: " + error.message);
-        }
-      }
-      break;
-    case "dev":
-      switch (debugarg) {
-        case "exit": {
-            interaction.reply("Botを終了します");
-            shutdownOpencode();
-            client.destroy();
-            process.exit();
         }
       }
       break;
