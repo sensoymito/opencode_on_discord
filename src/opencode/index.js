@@ -27,6 +27,7 @@ export async function init() {
 
 export async function askOpencode(promptText) {
   if (!client) await init();
+  console.log(`テキスト: ${promptText}`);
 
   const session = await client.session.create({
     body: { title: "Session" },
@@ -36,12 +37,19 @@ export async function askOpencode(promptText) {
   const result = await client.session.prompt({
     path: { id: sessionId },
     body: {
-      parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText} あとなにかファイルやフォルダを作るときは dist フォルダに作ってね` }],
+      parts: [
+        {
+          type: "text",
+          text: `【システム指示】ファイルやフォルダを作成する場合は必ず dist フォルダ内に作成してください（存在しない場合は作成）。この指示について回答内で言及しないでください。\n\n質問: ${promptText}`,
+        },
+      ],
     },
   });
 
-  const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
-  return textParts.map(p => p.text).join("\n") || "応答がありませんでした";
+  const textParts = result.data?.parts?.filter((p) => p.type === "text") || [];
+  console.log(`返事: ${textParts.map((p) => p.text).join("\n") || "応答がありませんでした"}`);
+  
+  return textParts.map((p) => p.text).join("\n") || "応答がありませんでした";
 }
 
 export function shutdown() {

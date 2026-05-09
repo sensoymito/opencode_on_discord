@@ -1,9 +1,4 @@
-import {
-  Client,
-  GatewayIntentBits,
-  Events,
-  SlashCommandBuilder,
-} from "discord.js";
+import { Client, GatewayIntentBits, Events, SlashCommandBuilder,} from "discord.js";
 import dotenv from "dotenv";
 import { askOpencode, init as initOpencode, shutdown as shutdownOpencode } from "./opencode/index.js";
 
