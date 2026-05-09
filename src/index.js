@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import dotenv from "dotenv";
-import { askOpencode } from "./opencode/index.js"
+import { askOpencode } from "./opencode/index.js";
 
 dotenv.config();
 
@@ -36,7 +36,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const arg = interaction.options.getString("text");
   switch (command) {
     case "ask":
-      await interaction.reply(`${arg}: 実行`);
+      await interaction.deferReply();
+      try {
+        const response = await askOpencode(arg);
+        await interaction.editReply(response);
+      } catch (error) {
+        console.error(error);
+        await interaction.editReply("エラーが発生しました: " + error.message);
+      }
   }
 });
 
