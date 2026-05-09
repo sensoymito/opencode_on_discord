@@ -47,7 +47,9 @@ export async function askOpencode(promptText) {
       },
     });
 
-    const textParts = result.parts?.filter(p => p.type === "text") || [];
+    console.log("Raw result:", JSON.stringify(result.data, null, 2));
+
+    const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
     const replyText = textParts.map(p => p.text).join("\n") || "応答がありませんでした";
     console.log("Response:", replyText);
     return replyText;
