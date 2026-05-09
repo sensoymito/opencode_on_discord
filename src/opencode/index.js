@@ -1,23 +1,13 @@
 import { createOpencode } from "@opencode-ai/sdk";
 
+let client = null;
+let server = null;
 
-/**
- * @param {string} promptText
- *
- * @returns {Promise<any>}
- */
-export async function askOpencode(promptText) {
-  const api_key = process.env.OPENCODE_GO_API_KEY;
+export async function init() {
+  if (client) return;
 
-  if (!api_key) {
-    throw new Error(
-      "APIキーが設定されていません。環境変数 OPENCODE_GO_API_KEY を設定してください。",
-    );
-  }
-
-  console.log("StartingOpencode Server");
-
-  const { client, server } = await createOpencode({
+  console.log("Starting Opencode Server...");
+  const res = await createOpencode({
     hostname: "127.0.0.1",
     port: 4096,
     config: {
@@ -25,36 +15,38 @@ export async function askOpencode(promptText) {
     },
   });
 
+  client = res.client;
+  server = res.server;
+
   await client.auth.set({
     path: { id: "opencode-go" },
-    body: { type: "api", key: api_key },
+    body: { type: "api", key: process.env.OPENCODE_GO_API_KEY },
+  });
+  console.log(`Server running at ${server.url}`);
+}
+
+export async function askOpencode(promptText) {
+  if (!client) await init();
+
+  const session = await client.session.create({
+    body: { title: "Session" },
+  });
+  const sessionId = session.data?.id || session.id;
+
+  const result = await client.session.prompt({
+    path: { id: sessionId },
+    body: {
+      parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText} あとなにかファイルやフォルダを作るときは dist フォルダに作ってね` }],
+    },
   });
 
-  console.log(`Server running at ${server.url}`);
+  const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
+  return textParts.map(p => p.text).join("\n") || "応答がありませんでした";
+}
 
-  try {
-    // セッション作成
-    const session = await client.session.create({
-      body: { title: "Modular Session" },
-    });
-    const sessionId = session.data?.id || session.id;
-
-    // プロンプト送信
-    console.log(`Sending prompt: "${promptText}"`);
-    const result = await client.session.prompt({
-      path: { id: sessionId },
-      body: {
-        parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText??"適当な話をして"}` }],
-      },
-    });
-
-    const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
-    const replyText = textParts.map(p => p.text).join("\n") || "応答がありませんでした";
-
-    return { text: replyText };
-
-  } finally {
-    console.log("Shutting down server...");
+export function shutdown() {
+  if (server) {
     server.close();
+    console.log("Opencode server shut down.");
   }
 }

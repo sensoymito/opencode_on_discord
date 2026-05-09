@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import dotenv from "dotenv";
-import { askOpencode } from "./opencode/index.js";
+import { askOpencode, init as initOpencode, shutdown as shutdownOpencode } from "./opencode/index.js";
 
 dotenv.config();
 
@@ -15,6 +15,7 @@ const client = new Client({
 
 client.on(Events.ClientReady, async () => {
   console.log(`${client.user.tag} でログインしました`);
+  await initOpencode();
 
   const commands = [
     new SlashCommandBuilder()
@@ -35,9 +36,6 @@ client.on(Events.ClientReady, async () => {
           .setDescription("デバッグ用コード")
           .setRequired(true),
       ),
-    new SlashCommandBuilder()
-      .setName("trail")
-      .setDescription("Opencode Goの残りトークンや消費量を表示します"),
   ];
 
   await client.application.commands.set(commands);
@@ -55,24 +53,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
     case "ask":
       await interaction.deferReply();
       try {
-        const { text, usage } = await askOpencode(arg);
-        const reply = `${text}\n\n---\n💰 Cost: ${usage.cost}\n🔢 Tokens: Input ${usage.tokens.input}, Output ${usage.tokens.output}`;
-        await interaction.editReply(reply);
+        const replyText = await askOpencode(arg);
+        await interaction.editReply(replyText);
       } catch (error) {
         console.error(error);
         await interaction.editReply("エラーが発生しました: " + error.message);
       }
+      break;
     case "dev":
       switch (debugarg) {
         case "exit": {
-            interaction.reply("Botを狩猟します")
-          client.destroy();
-          process.exit();
+            interaction.reply("Botを終了します");
+            shutdownOpencode();
+            client.destroy();
+            process.exit();
         }
       }
-    case "trail":
-        const used_token = ""
-
+      break;
   }
 });
 
