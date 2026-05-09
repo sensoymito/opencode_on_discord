@@ -41,7 +41,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const command = interaction.commandName;
-  const arg = interaction.options.getString("text");
+  const textarg = interaction.options.getString("text");
   const debugarg = interaction.options.getString("code");
 
   switch (command) {
@@ -53,7 +53,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       if (!interaction.deferred) return;
 
       try {
-        const replyText = await askOpencode(arg);
+        const replyText = await askOpencode(textarg);
         await interaction.editReply(replyText);
       } catch (error) {
         console.error(error);
