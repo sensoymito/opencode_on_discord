@@ -46,13 +46,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   switch (command) {
     case "ask":
-      await interaction.deferReply();
+      if (!interaction.isRepliable()) return;
+      await interaction.deferReply().catch(err => {
+        console.error("Defer failed:", err);
+      });
+      if (!interaction.deferred) return;
+
       try {
         const replyText = await askOpencode(arg);
         await interaction.editReply(replyText);
       } catch (error) {
         console.error(error);
-        await interaction.editReply("エラーが発生しました: " + error.message);
+        if (interaction.isRepliable()) {
+          await interaction.editReply("エラーが発生しました: " + error.message);
+        }
       }
       break;
     case "dev":
