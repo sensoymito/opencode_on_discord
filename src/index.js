@@ -1,5 +1,9 @@
-import { Client, GatewayIntentBits, Events, SlashCommandBuilder } from "discord.js";
-import {} from "@opencode-ai/sdk";
+import {
+  Client,
+  GatewayIntentBits,
+  Events,
+  SlashCommandBuilder,
+} from "discord.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -15,11 +19,9 @@ client.on(Events.ClientReady, async () => {
     new SlashCommandBuilder()
       .setName("ask")
       .setDescription("返事をしてくれます")
-      .addStringOption(option => option
-        .setName("text")
-        .setDescription("コンテキスト")
-        .setRequired(true)
-      )
+      .addStringOption((option) =>
+        option.setName("text").setDescription("コンテキスト").setRequired(true),
+      ),
   ];
 
   await client.application.commands.set(commands);
@@ -30,11 +32,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   const command = interaction.commandName;
-
-  if (command === "ask") {
-    const arg = interaction.options.getString("text")
-    await interaction.reply(`${arg}: 実行`);
+  const arg = interaction.options.getString("text");
+  switch (command) {
+    case "ask":
+      await interaction.reply(`${arg}: 実行`);
   }
 });
 
-client.login(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN);

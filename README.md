@@ -1,1 +1,2 @@
 # opencode_on_discord
+Discode内でOpencodeを使う。以上
