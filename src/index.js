@@ -19,16 +19,25 @@ client.on(Events.ClientReady, async () => {
   const commands = [
     new SlashCommandBuilder()
       .setName("ask")
-      .setDescription("返事をしてくれます")
+      .setDescription("Qwen3.6 Plus が質問に答えます")
       .addStringOption((option) =>
-        option.setName("text").setDescription("コンテキスト").setRequired(true),
+        option
+          .setName("text")
+          .setDescription("プロンプトテキスト")
+          .setRequired(true),
       ),
     new SlashCommandBuilder()
       .setName("dev")
       .setDescription("デバッグ用")
       .addStringOption((option) =>
-        option.setName("code").setDescription("デバッグ用コード").setRequired(true),
+        option
+          .setName("code")
+          .setDescription("デバッグ用コード")
+          .setRequired(true),
       ),
+    new SlashCommandBuilder()
+      .setName("trail")
+      .setDescription("Opencode Goの残りトークンや消費量を表示します"),
   ];
 
   await client.application.commands.set(commands);
@@ -40,24 +49,30 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   const command = interaction.commandName;
   const arg = interaction.options.getString("text");
-  const debugarg = interaction.options.getString("code")
+  const debugarg = interaction.options.getString("code");
+
   switch (command) {
     case "ask":
       await interaction.deferReply();
       try {
-        const response = await askOpencode(arg);
-        await interaction.editReply(response);
+        const { text, usage } = await askOpencode(arg);
+        const reply = `${text}\n\n---\n💰 Cost: ${usage.cost}\n🔢 Tokens: Input ${usage.tokens.input}, Output ${usage.tokens.output}`;
+        await interaction.editReply(reply);
       } catch (error) {
         console.error(error);
         await interaction.editReply("エラーが発生しました: " + error.message);
       }
     case "dev":
-        switch (debugarg) {
-            case "exit": {
-                client.destroy()
-                process.exit()
-            }
+      switch (debugarg) {
+        case "exit": {
+            interaction.reply("Botを狩猟します")
+          client.destroy();
+          process.exit();
         }
+      }
+    case "trail":
+        const used_token = ""
+
   }
 });
 

@@ -43,7 +43,7 @@ export async function askOpencode(promptText) {
     const result = await client.session.prompt({
       path: { id: sessionId },
       body: {
-        parts: [{ type: "text", text: promptText }],
+        parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText}` }],
       },
     });
 
@@ -51,8 +51,13 @@ export async function askOpencode(promptText) {
 
     const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
     const replyText = textParts.map(p => p.text).join("\n") || "応答がありませんでした";
-    console.log("Response:", replyText);
-    return replyText;
+
+    const usage = {
+      cost: result.data.info.cost,
+      tokens: result.data.info.tokens
+    };
+
+    return { text: replyText, usage };
   } finally {
     console.log("Shutting down server...");
     server.close();
