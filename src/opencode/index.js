@@ -1,5 +1,6 @@
 import { createOpencode } from "@opencode-ai/sdk";
 
+
 /**
  * @param {string} promptText
  *
@@ -43,21 +44,15 @@ export async function askOpencode(promptText) {
     const result = await client.session.prompt({
       path: { id: sessionId },
       body: {
-        parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText}` }],
+        parts: [{ type: "text", text: `以下の質問に日本語で答えてください: ${promptText??"適当な話をして"}` }],
       },
     });
-
-    console.log("Raw result:", JSON.stringify(result.data, null, 2));
 
     const textParts = result.data?.parts?.filter(p => p.type === "text") || [];
     const replyText = textParts.map(p => p.text).join("\n") || "応答がありませんでした";
 
-    const usage = {
-      cost: result.data.info.cost,
-      tokens: result.data.info.tokens
-    };
+    return { text: replyText };
 
-    return { text: replyText, usage };
   } finally {
     console.log("Shutting down server...");
     server.close();
