@@ -23,6 +23,12 @@ client.on(Events.ClientReady, async () => {
       .addStringOption((option) =>
         option.setName("text").setDescription("コンテキスト").setRequired(true),
       ),
+    new SlashCommandBuilder()
+      .setName("dev")
+      .setDescription("デバッグ用")
+      .addStringOption((option) =>
+        option.setName("code").setDescription("デバッグ用コード").setRequired(true),
+      ),
   ];
 
   await client.application.commands.set(commands);
@@ -34,6 +40,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   const command = interaction.commandName;
   const arg = interaction.options.getString("text");
+  const debugarg = interaction.options.getString("code")
   switch (command) {
     case "ask":
       await interaction.deferReply();
@@ -44,6 +51,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
         console.error(error);
         await interaction.editReply("エラーが発生しました: " + error.message);
       }
+    case "dev":
+        switch (debugarg) {
+            case "exit": {
+                client.destroy()
+                process.exit()
+            }
+        }
   }
 });
 
