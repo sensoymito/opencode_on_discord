@@ -6,3 +6,4 @@ Discode内でOpencodeを使う。以上
     `OPENCODE_GO_API_KEY`を設定。
 DISCORD_TOKENにはbotのtokenを入れる、
 OPENCODE_GO_API_KEYにはOpencode GoのapiKeyを入れる。
+あと`npm i`もしてね
